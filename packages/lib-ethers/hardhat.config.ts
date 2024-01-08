@@ -128,6 +128,16 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("sepolia"),
     ...infuraNetwork("mainnet"),
 
+    botonixFork: {
+      url: "http://localhost:3000",
+      accounts: [deployerAccount]
+    },
+    
+    botonix: {
+      url: "https://node.botanixlabs.dev",
+      accounts: [deployerAccount]
+    },
+
     kiln: {
       url: "https://rpc.kiln.themerge.dev",
       accounts: [deployerAccount]

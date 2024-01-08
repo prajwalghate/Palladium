@@ -16,22 +16,22 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     // --- Data ---
-    string constant public NAME = "LQTYStaking";
+    string public constant NAME = "PDMStaking";
 
-    mapping( address => uint) public stakes;
+    mapping(address => uint) public stakes;
     uint public totalLQTYStaked;
 
-    uint public F_ETH;  // Running sum of ETH fees per-LQTY-staked
-    uint public F_LUSD; // Running sum of LQTY fees per-LQTY-staked
+    uint public F_ETH; // Running sum of ETH fees per-PDM-staked
+    uint public F_LUSD; // Running sum of PDM fees per-PDM-staked
 
     // User snapshots of F_ETH and F_LUSD, taken at the point at which their latest deposit was made
-    mapping (address => Snapshot) public snapshots; 
+    mapping(address => Snapshot) public snapshots;
 
     struct Snapshot {
         uint F_ETH_Snapshot;
         uint F_LUSD_Snapshot;
     }
-    
+
     ILQTYToken public lqtyToken;
     ILUSDToken public lusdToken;
 
@@ -57,18 +57,13 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     // --- Functions ---
 
-    function setAddresses
-    (
+    function setAddresses(
         address _lqtyTokenAddress,
         address _lusdTokenAddress,
-        address _troveManagerAddress, 
+        address _troveManagerAddress,
         address _borrowerOperationsAddress,
         address _activePoolAddress
-    ) 
-        external 
-        onlyOwner 
-        override 
-    {
+    ) external override onlyOwner {
         checkContract(_lqtyTokenAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_troveManagerAddress);
@@ -90,7 +85,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         _renounceOwnership();
     }
 
-    // If caller has a pre-existing stake, send any accumulated ETH and LUSD gains to them. 
+    // If caller has a pre-existing stake, send any accumulated ETH and LUSD gains to them.
     function stake(uint _LQTYamount) external override {
         _requireNonZeroAmount(_LQTYamount);
 
@@ -103,8 +98,8 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
             ETHGain = _getPendingETHGain(msg.sender);
             LUSDGain = _getPendingLUSDGain(msg.sender);
         }
-    
-       _updateUserSnapshots(msg.sender);
+
+        _updateUserSnapshots(msg.sender);
 
         uint newStake = currentStake.add(_LQTYamount);
 
@@ -119,23 +114,23 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         emit StakeChanged(msg.sender, newStake);
         emit StakingGainsWithdrawn(msg.sender, LUSDGain, ETHGain);
 
-         // Send accumulated LUSD and ETH gains to the caller
+        // Send accumulated LUSD and ETH gains to the caller
         if (currentStake != 0) {
             lusdToken.transfer(msg.sender, LUSDGain);
             _sendETHGainToUser(ETHGain);
         }
     }
 
-    // Unstake the LQTY and send the it back to the caller, along with their accumulated LUSD & ETH gains. 
+    // Unstake the LQTY and send the it back to the caller, along with their accumulated LUSD & ETH gains.
     // If requested amount > stake, send their entire stake.
     function unstake(uint _LQTYamount) external override {
         uint currentStake = stakes[msg.sender];
         _requireUserHasStake(currentStake);
 
-        // Grab any accumulated ETH and LUSD gains from the current stake
+        // Grab any accumulated ETH and PUSD gains from the current stake
         uint ETHGain = _getPendingETHGain(msg.sender);
         uint LUSDGain = _getPendingLUSDGain(msg.sender);
-        
+
         _updateUserSnapshots(msg.sender);
 
         if (_LQTYamount > 0) {
@@ -143,12 +138,12 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
             uint newStake = currentStake.sub(LQTYToWithdraw);
 
-            // Decrease user's stake and total LQTY staked
+            // Decrease user's stake and total PDM staked
             stakes[msg.sender] = newStake;
             totalLQTYStaked = totalLQTYStaked.sub(LQTYToWithdraw);
             emit TotalLQTYStakedUpdated(totalLQTYStaked);
 
-            // Transfer unstaked LQTY to user
+            // Transfer unstaked PDM to user
             lqtyToken.transfer(msg.sender, LQTYToWithdraw);
 
             emit StakeChanged(msg.sender, newStake);
@@ -156,7 +151,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
         emit StakingGainsWithdrawn(msg.sender, LUSDGain, ETHGain);
 
-        // Send accumulated LUSD and ETH gains to the caller
+        // Send accumulated PUSD and ETH gains to the caller
         lusdToken.transfer(msg.sender, LUSDGain);
         _sendETHGainToUser(ETHGain);
     }
@@ -166,19 +161,23 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     function increaseF_ETH(uint _ETHFee) external override {
         _requireCallerIsTroveManager();
         uint ETHFeePerLQTYStaked;
-     
-        if (totalLQTYStaked > 0) {ETHFeePerLQTYStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
 
-        F_ETH = F_ETH.add(ETHFeePerLQTYStaked); 
+        if (totalLQTYStaked > 0) {
+            ETHFeePerLQTYStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);
+        }
+
+        F_ETH = F_ETH.add(ETHFeePerLQTYStaked);
         emit F_ETHUpdated(F_ETH);
     }
 
     function increaseF_LUSD(uint _LUSDFee) external override {
         _requireCallerIsBorrowerOperations();
         uint LUSDFeePerLQTYStaked;
-        
-        if (totalLQTYStaked > 0) {LUSDFeePerLQTYStaked = _LUSDFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
-        
+
+        if (totalLQTYStaked > 0) {
+            LUSDFeePerLQTYStaked = _LUSDFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);
+        }
+
         F_LUSD = F_LUSD.add(LUSDFeePerLQTYStaked);
         emit F_LUSDUpdated(F_LUSD);
     }
@@ -216,29 +215,29 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     function _sendETHGainToUser(uint ETHGain) internal {
         emit EtherSent(msg.sender, ETHGain);
         (bool success, ) = msg.sender.call{value: ETHGain}("");
-        require(success, "LQTYStaking: Failed to send accumulated ETHGain");
+        require(success, "PDMStaking: Failed to send accumulated ETHGain");
     }
 
     // --- 'require' functions ---
 
     function _requireCallerIsTroveManager() internal view {
-        require(msg.sender == troveManagerAddress, "LQTYStaking: caller is not TroveM");
+        require(msg.sender == troveManagerAddress, "PDMStaking: caller is not TroveM");
     }
 
     function _requireCallerIsBorrowerOperations() internal view {
-        require(msg.sender == borrowerOperationsAddress, "LQTYStaking: caller is not BorrowerOps");
+        require(msg.sender == borrowerOperationsAddress, "PDMStaking: caller is not BorrowerOps");
     }
 
-     function _requireCallerIsActivePool() internal view {
-        require(msg.sender == activePoolAddress, "LQTYStaking: caller is not ActivePool");
+    function _requireCallerIsActivePool() internal view {
+        require(msg.sender == activePoolAddress, "PDMStaking: caller is not ActivePool");
     }
 
-    function _requireUserHasStake(uint currentStake) internal pure {  
-        require(currentStake > 0, 'LQTYStaking: User must have a non-zero stake');  
+    function _requireUserHasStake(uint currentStake) internal pure {
+        require(currentStake > 0, "PDMStaking: User must have a non-zero stake");
     }
 
     function _requireNonZeroAmount(uint _amount) internal pure {
-        require(_amount > 0, 'LQTYStaking: Amount must be non-zero');
+        require(_amount > 0, "PDMStaking: Amount must be non-zero");
     }
 
     receive() external payable {
