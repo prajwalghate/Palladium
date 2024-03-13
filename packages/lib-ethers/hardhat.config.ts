@@ -82,6 +82,10 @@ const oracleAddresses = {
     chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
     tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
   },
+  goerliFork: {
+    chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
+    tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
+  },
   sepolia: {
     chainlink: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
     tellor: "0x80fc34a2f9FfE86F41580F47368289C402DEc660"
@@ -96,6 +100,7 @@ const wethAddresses = {
   ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  goerliFork: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
 };
@@ -128,13 +133,22 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("sepolia"),
     ...infuraNetwork("mainnet"),
 
+    goerliFork: {
+      url: "http://127.0.0.1:3000/",
+      accounts: [deployerAccount]
+    },
     botonixFork: {
-      url: "http://localhost:3000",
+      url: "http://127.0.0.1:3000/",
       accounts: [deployerAccount]
     },
     
     botonix: {
       url: "https://node.botanixlabs.dev",
+      accounts: [deployerAccount]
+    },
+
+    lineagoerli: {
+      url: "https://linea-goerli.infura.io/v3/ebc47a06d8f742189465f9d3bca1417e",
       accounts: [deployerAccount]
     },
 
