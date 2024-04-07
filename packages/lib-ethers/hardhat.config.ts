@@ -216,6 +216,7 @@ type DeployParams = {
   gasPrice?: number;
   useRealPriceFeed?: boolean;
   createUniswapPair?: boolean;
+  setRouterOracle?: boolean;
 };
 
 const defaultChannel = process.env.CHANNEL || "default";
@@ -235,8 +236,14 @@ task("deploy", "Deploys the contracts to the network")
     undefined,
     types.boolean
   )
+  .addOptionalParam(
+    "setRouterOracle",
+    "Set oracle router address in pricefeed testnet",
+    undefined,
+    types.boolean
+  )
   .setAction(
-    async ({ channel, gasPrice, useRealPriceFeed, createUniswapPair }: DeployParams, env) => {
+    async ({ channel, gasPrice, useRealPriceFeed, createUniswapPair,setRouterOracle }: DeployParams, env) => {
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
@@ -253,6 +260,7 @@ task("deploy", "Deploys the contracts to the network")
         }
         wethAddress = wethAddresses[env.network.name];
       }
+
 
       setSilent(false);
 
@@ -283,6 +291,15 @@ task("deploy", "Deploys the contracts to the network")
         }
       }
 
+      if(setRouterOracle){
+        const contracts = _connectToContracts(deployer, deployment);
+        assert(_priceFeedIsTestnet(contracts.priceFeed));
+        const tx = await contracts.priceFeed.setAddresses(
+          "0x77b713201dDA5805De0F19f4B8a127Cc55f6dac6",
+          overrides
+        );
+      }
+
       fs.mkdirSync(path.join("deployments", channel), { recursive: true });
 
       fs.writeFileSync(
@@ -295,7 +312,6 @@ task("deploy", "Deploys the contracts to the network")
       console.log();
     }
   );
-
 type StorageSlotParams = {
   contractAddress: string;
   walletAddress: string;
