@@ -26,11 +26,11 @@ import "../Dependencies/console.sol";
 *
 * 3) Supply hard-capped at 100 million
 *
-* 4) CommunityIssuance and LockupContractFactory addresses are set at deployment
+* 4) CommunityIssuance and LockupContractFactory addresses are set at deployment 
 *
 * 5) The bug bounties / hackathons allocation of 2 million tokens is minted at deployment to an EOA
 
-* 6) 32 million tokens are minted at deployment to the CommunityIssuance contract
+* 6) 32 million tokens are minted at deployment to the CommunityIssuance contract  //for stability pool providers
 *
 * 7) The LP rewards allocation of (1 + 1/3) million tokens is minted at deployent to a Staking contract
 *
@@ -134,13 +134,16 @@ contract LQTYToken is CheckContract, ILQTYToken {
 
         // --- Initial PDM allocations ---
 
-        uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
+        // uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
+        uint bountyEntitlement = _1_MILLION.mul(35); // Allocate 2 million for bounties/hackathons
         _mint(_bountyAddress, bountyEntitlement);
 
-        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
+        // uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
+        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(30); // Allocate 32 million to the algorithmic issuance schedule
         _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
 
-        uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3); // Allocate 1.33 million for LP rewards
+        // uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3); // Allocate 1.33 million for LP rewards
+        uint _lpRewardsEntitlement = _1_MILLION.mul(5); // Allocate 1.33 million for LP rewards
         lpRewardsEntitlement = _lpRewardsEntitlement;
         _mint(_lpRewardsAddress, _lpRewardsEntitlement);
 
