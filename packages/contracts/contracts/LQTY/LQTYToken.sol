@@ -135,21 +135,21 @@ contract LQTYToken is CheckContract, ILQTYToken {
         // --- Initial PDM allocations ---
 
         // uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
-        uint bountyEntitlement = _1_MILLION.mul(35); // Allocate 2 million for bounties/hackathons
+        uint bountyEntitlement = _1_MILLION.mul(350);//Update point // Allocate 2 million for bounties/hackathons
         _mint(_bountyAddress, bountyEntitlement);
 
         // uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
-        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(30); // Allocate 32 million to the algorithmic issuance schedule
+        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(300);//Update point // Allocate 32 million to the algorithmic issuance schedule
         _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
 
         // uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3); // Allocate 1.33 million for LP rewards
-        uint _lpRewardsEntitlement = _1_MILLION.mul(5); // Allocate 1.33 million for LP rewards
+        uint _lpRewardsEntitlement = _1_MILLION.mul(50);//Update point // Allocate 1.33 million for LP rewards
         lpRewardsEntitlement = _lpRewardsEntitlement;
         _mint(_lpRewardsAddress, _lpRewardsEntitlement);
 
         // Allocate the remainder to the LQTY Multisig: (100 - 2 - 32 - 1.33) million = 64.66 million
         uint multisigEntitlement = _1_MILLION
-            .mul(100)
+            .mul(1000)//Update point
             .sub(bountyEntitlement)
             .sub(depositorsAndFrontEndsEntitlement)
             .sub(_lpRewardsEntitlement);
