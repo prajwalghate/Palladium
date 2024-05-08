@@ -23,7 +23,6 @@ import accounts from "./accounts.json";
 dotenv.config();
 
 const numAccounts = 100;
-
 const useLiveVersionEnv = (process.env.USE_LIVE_VERSION ?? "false").toLowerCase();
 const useLiveVersion = !["false", "no", "0"].includes(useLiveVersionEnv);
 
@@ -82,6 +81,10 @@ const oracleAddresses = {
     chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
     tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
   },
+  goerliFork: {
+    chainlink: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
+    tellor: "0x51c59c6cAd28ce3693977F2feB4CfAebec30d8a2"
+  },
   sepolia: {
     chainlink: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
     tellor: "0x80fc34a2f9FfE86F41580F47368289C402DEc660"
@@ -96,8 +99,11 @@ const wethAddresses = {
   ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  goerliFork: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+  sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+  botonixFork:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6",
+  botonix:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6"
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -128,21 +134,26 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("sepolia"),
     ...infuraNetwork("mainnet"),
 
-    botonixFork: {
-      url: "http://localhost:3000",
+    goerliFork: {
+      url: "http://127.0.0.1:3000/",
       accounts: [deployerAccount]
     },
-    
+    botonixFork: {
+      url: "http://127.0.0.1:3000/",
+      accounts: [deployerAccount]
+    },
     botonix: {
       url: "https://node.botanixlabs.dev",
       accounts: [deployerAccount]
     },
-
+    lineagoerli: {
+      url: "https://linea-goerli.infura.io/v3/ebc47a06d8f742189465f9d3bca1417e",
+      accounts: [deployerAccount]
+    },
     kiln: {
       url: "https://rpc.kiln.themerge.dev",
       accounts: [deployerAccount]
     },
-
     forkedMainnet: {
       url: "http://localhost:8545"
     }
@@ -202,6 +213,7 @@ type DeployParams = {
   gasPrice?: number;
   useRealPriceFeed?: boolean;
   createUniswapPair?: boolean;
+  setRouterOracle?: boolean;
 };
 
 const defaultChannel = process.env.CHANNEL || "default";
@@ -221,8 +233,14 @@ task("deploy", "Deploys the contracts to the network")
     undefined,
     types.boolean
   )
+  .addOptionalParam(
+    "setRouterOracle",
+    "Set oracle router address in pricefeed testnet",
+    undefined,
+    types.boolean
+  )
   .setAction(
-    async ({ channel, gasPrice, useRealPriceFeed, createUniswapPair }: DeployParams, env) => {
+    async ({ channel, gasPrice, useRealPriceFeed, createUniswapPair,setRouterOracle }: DeployParams, env) => {
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
@@ -239,6 +257,7 @@ task("deploy", "Deploys the contracts to the network")
         }
         wethAddress = wethAddresses[env.network.name];
       }
+
 
       setSilent(false);
 
@@ -269,6 +288,16 @@ task("deploy", "Deploys the contracts to the network")
         }
       }
 
+      if(setRouterOracle){
+        const contracts = _connectToContracts(deployer, deployment);
+        const priceRouter="0xd9833A378637573E1CB56Bb9FFd69FA1F487Ad31";
+        assert(_priceFeedIsTestnet(contracts.priceFeed));
+        const tx = await contracts.priceFeed.setAddresses(
+          priceRouter,
+          overrides
+        );
+      }
+
       fs.mkdirSync(path.join("deployments", channel), { recursive: true });
 
       fs.writeFileSync(
@@ -281,7 +310,6 @@ task("deploy", "Deploys the contracts to the network")
       console.log();
     }
   );
-
 type StorageSlotParams = {
   contractAddress: string;
   walletAddress: string;
