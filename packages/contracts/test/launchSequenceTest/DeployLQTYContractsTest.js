@@ -14,11 +14,20 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
   let LQTYContracts
+  
 
   const oneMillion = toBN(1000000)
   const digits = toBN(1e18)
   const thirtyTwo = toBN(32)
-  const expectedCISupplyCap = thirtyTwo.mul(oneMillion).mul(digits)
+  // const expectedCISupplyCap = thirtyTwo.mul(oneMillion).mul(digits)
+
+
+  ///tokenomixs changeable 
+  const expectedCISupplyCap= toBN(300).mul(oneMillion).mul(digits)
+  const _1pt33Million = dec(50, 24)
+  const _2Million = dec(350, 24)
+  const _32Million = dec(300, 24)
+
 
   beforeEach(async () => {
     // Deploy all contracts from the first account
@@ -74,14 +83,16 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
       const multisigLQTYEntitlement = await lqtyToken.balanceOf(multisig)
 
      const twentyThreeSixes = "6".repeat(23)
-      const expectedMultisigEntitlement = "64".concat(twentyThreeSixes).concat("7")
+     const OnemillZero = "0".repeat(24)
+      // const expectedMultisigEntitlement = "64".concat(twentyThreeSixes).concat("7")
+      const expectedMultisigEntitlement = "300".concat(OnemillZero)
       assert.equal(multisigLQTYEntitlement, expectedMultisigEntitlement)
     })
 
     it("Mints the correct LQTY amount to the CommunityIssuance contract address: 32 million", async () => {
       const communityLQTYEntitlement = await lqtyToken.balanceOf(communityIssuance.address)
       // 32 million as 18-digit decimal
-      const _32Million = dec(32, 24)
+      // const _32Million = dec(32, 24)
 
       assert.equal(communityLQTYEntitlement, _32Million)
     })
@@ -89,7 +100,7 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
     it("Mints the correct LQTY amount to the bountyAddress EOA: 2 million", async () => {
       const bountyAddressBal = await lqtyToken.balanceOf(bountyAddress)
       // 2 million as 18-digit decimal
-      const _2Million = dec(2, 24)
+      // const _2Million = dec(2, 24)
 
       assert.equal(bountyAddressBal, _2Million)
     })
@@ -97,7 +108,7 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
     it("Mints the correct LQTY amount to the lpRewardsAddress EOA: 1.33 million", async () => {
       const lpRewardsAddressBal = await lqtyToken.balanceOf(lpRewardsAddress)
       // 1.3 million as 18-digit decimal
-      const _1pt33Million = "1".concat("3".repeat(24))
+      // const _1pt33Million = "1".concat("3".repeat(24))
 
       assert.equal(lpRewardsAddressBal, _1pt33Million)
     })
@@ -113,6 +124,7 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
 
     it("Has a supply cap of 32 million", async () => {
       const supplyCap = await communityIssuance.LQTYSupplyCap()
+      console.log("supplyCap",supplyCap.toString())
 
       assert.isTrue(expectedCISupplyCap.eq(supplyCap))
     })

@@ -23,7 +23,6 @@ import accounts from "./accounts.json";
 dotenv.config();
 
 const numAccounts = 100;
-
 const useLiveVersionEnv = (process.env.USE_LIVE_VERSION ?? "false").toLowerCase();
 const useLiveVersion = !["false", "no", "0"].includes(useLiveVersionEnv);
 
@@ -102,7 +101,9 @@ const wethAddresses = {
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   goerliFork: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+  sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+  botonixFork:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6",
+  botonix:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6"
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -141,22 +142,18 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:3000/",
       accounts: [deployerAccount]
     },
-    
     botonix: {
       url: "https://node.botanixlabs.dev",
       accounts: [deployerAccount]
     },
-
     lineagoerli: {
       url: "https://linea-goerli.infura.io/v3/ebc47a06d8f742189465f9d3bca1417e",
       accounts: [deployerAccount]
     },
-
     kiln: {
       url: "https://rpc.kiln.themerge.dev",
       accounts: [deployerAccount]
     },
-
     forkedMainnet: {
       url: "http://localhost:8545"
     }
@@ -293,9 +290,10 @@ task("deploy", "Deploys the contracts to the network")
 
       if(setRouterOracle){
         const contracts = _connectToContracts(deployer, deployment);
+        const priceRouter="0xd9833A378637573E1CB56Bb9FFd69FA1F487Ad31";
         assert(_priceFeedIsTestnet(contracts.priceFeed));
         const tx = await contracts.priceFeed.setAddresses(
-          "0x77b713201dDA5805De0F19f4B8a127Cc55f6dac6",
+          priceRouter,
           overrides
         );
       }

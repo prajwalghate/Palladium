@@ -67,7 +67,9 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       await th.openTrove(coreContracts, { extraLUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
     }
 
-    const expectedCISupplyCap = '32000000000000000000000000' // 32mil
+    // const expectedCISupplyCap = '32000000000000000000000000' // 32mil
+    const expectedCISupplyCap = '300000000000000000000000000' // 300mil
+
 
     // Check CI has been properly funded
     const bal = await lqtyToken.balanceOf(communityIssuance.address)

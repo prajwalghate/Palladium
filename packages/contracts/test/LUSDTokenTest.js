@@ -122,12 +122,12 @@ contract('LUSDToken', async accounts => {
 
     it("name(): returns the token's name", async () => {
       const name = await lusdTokenTester.name()
-      assert.equal(name, "LUSD Stablecoin")
+      assert.equal(name, "PUSD Stablecoin")
     })
 
     it("symbol(): returns the token's symbol", async () => {
       const symbol = await lusdTokenTester.symbol()
-      assert.equal(symbol, "LUSD")
+      assert.equal(symbol, "PUSD")
     })
 
     it("decimal(): returns the number of decimal digits used", async () => {
@@ -371,7 +371,7 @@ contract('LUSDToken', async accounts => {
         // Check that we can not use re-use the same signature, since the user's nonce has been incremented (replay protection)
         await assertRevert(lusdTokenTester.permit(
           approve.owner, approve.spender, approve.value,
-          deadline, v, r, s), 'LUSD: invalid signature')
+          deadline, v, r, s), 'PUSD: invalid signature')
 
         // Check that the zero address fails
         await assertAssert(lusdTokenTester.permit('0x0000000000000000000000000000000000000000',

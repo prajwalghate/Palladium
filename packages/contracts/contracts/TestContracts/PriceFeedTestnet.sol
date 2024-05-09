@@ -29,7 +29,12 @@ contract PriceFeedTestnet is IPriceFeed,CheckContract, Ownable {
 
     // --- Functions ---
 
-    // View price getter for simplicity in tests
+    function _storePrice(uint _currentPrice) internal {
+        lastGoodPrice = _currentPrice;
+        emit LastGoodPriceUpdated(_currentPrice);
+    }
+
+    // // View price getter for simplicity in tests
     function getPrice() external view returns (uint256) {
         return lastGoodPrice;
     }
@@ -41,14 +46,27 @@ contract PriceFeedTestnet is IPriceFeed,CheckContract, Ownable {
         return price;
     }
 
-    function _storePrice(uint _currentPrice) internal {
-        lastGoodPrice = _currentPrice;
-        emit LastGoodPriceUpdated(_currentPrice);
-    }
-
     function setPrice(uint256 price) external returns (bool) {
-        // _price = price;
+        // lastGoodPrice = price;
         return true;
     }
+
+
+    /*==============for testing==============*/
+
+    // uint256 private _price = 200 * 1e18;
+    // function getPrice() external view returns (uint256) {
+    //     return _price;
+    // }
+    // function fetchPrice() external override returns (uint256) {
+    //     emit LastGoodPriceUpdated(_price);
+    //     return _price;
+    // }
+    // function setPrice(uint256 price) external returns (bool) {
+    //     _price = price;
+    //     return true;
+    // }
+
+
 
 }

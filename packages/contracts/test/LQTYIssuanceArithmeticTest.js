@@ -759,6 +759,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
     //    expectedTotalLQTYIssued: ${expectedTotalLQTYIssued},
     //    abs. error: ${absError}`
     // )
+    // console.log("Test console",String(totalLQTYIssued));
 
     assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
   })
