@@ -128,7 +128,7 @@ contract('During the initial lockup period', async accounts => {
         const LQTYtransferTx_A = await lqtyToken.transfer(LC_A.address, dec(1, 18), { from: multisig })
         assert.isFalse(LQTYtransferTx_A.receipt.status)
       } catch (error) {
-        assert.include(error.message, "LQTYToken: recipient must be a LockupContract registered in the Factory")
+        assert.include(error.message, "PDMToken: recipient must be a LockupContract registered in the Factory")
       }
 
       // Liquity multisig attempts LQTY transfer to LC_B
@@ -136,14 +136,14 @@ contract('During the initial lockup period', async accounts => {
         const LQTYtransferTx_B = await lqtyToken.transfer(LC_B.address, dec(1, 18), { from: multisig })
         assert.isFalse(LQTYtransferTx_B.receipt.status)
       } catch (error) {
-        assert.include(error.message, "LQTYToken: recipient must be a LockupContract registered in the Factory")
+        assert.include(error.message, "PDMToken: recipient must be a LockupContract registered in the Factory")
       }
 
       try {
         const LQTYtransferTx_C = await lqtyToken.transfer(LC_C.address, dec(1, 18), { from: multisig })
         assert.isFalse(LQTYtransferTx_C.receipt.status)
       } catch (error) {
-        assert.include(error.message, "LQTYToken: recipient must be a LockupContract registered in the Factory")
+        assert.include(error.message, "PDMToken: recipient must be a LockupContract registered in the Factory")
       }
     })
 

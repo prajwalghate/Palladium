@@ -88,11 +88,12 @@ contract('LQTY Token', async accounts => {
 
   const buildPermitTx = async (deadline) => {
     const nonce = (await lqtyTokenTester.nonces(approve.owner)).toString()
-
+    // const chID=chainId;
+    const chID=31337;
     // Get the EIP712 digest
     const digest = getPermitDigest(
       tokenName, lqtyTokenTester.address,
-      chainId, tokenVersion,
+      chID, tokenVersion,
       approve.owner, approve.spender,
       approve.value, nonce, deadline
     )
@@ -139,17 +140,17 @@ contract('LQTY Token', async accounts => {
   it('totalSupply(): gets the total supply', async () => {
     const total = (await lqtyTokenTester.totalSupply()).toString()
    
-    assert.equal(total, dec(100, 24))
+    assert.equal(total, dec(1000, 24))
   })
 
   it("name(): returns the token's name", async () => {
     const name = await lqtyTokenTester.name()
-    assert.equal(name, "LQTY")
+    assert.equal(name, "PDM")
   })
 
   it("symbol(): returns the token's symbol", async () => {
     const symbol = await lqtyTokenTester.symbol()
-    assert.equal(symbol, "LQTY")
+    assert.equal(symbol, "PDM")
   })
 
   it("version(): returns the token contract's version", async () => {
@@ -354,11 +355,11 @@ contract('LQTY Token', async accounts => {
     // Check that we can not use re-use the same signature, since the user's nonce has been incremented (replay protection)
     await assertRevert(lqtyTokenTester.permit(
       approve.owner, approve.spender, approve.value,
-      deadline, v, r, s), 'LQTY: invalid signature')
+      deadline, v, r, s), 'PDM: invalid signature')
 
     // Check that the zero address fails
     await assertRevert(lqtyTokenTester.permit('0x0000000000000000000000000000000000000000',
-      approve.spender, approve.value, deadline, '0x99', r, s), 'LQTY: invalid signature')
+      approve.spender, approve.value, deadline, '0x99', r, s), 'PDM: invalid signature')
   })
 
   it('permit(): fails with expired deadline', async () => {

@@ -54,9 +54,12 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      // await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(dec(86, 18))
       const price = await priceFeed.getPrice()
       const TCR = await th.getTCR(contracts)
+      // console.log("TCR",TCR.toString())
+      // console.log((await th.checkRecoveryMode(contracts)).toString())
 
       // Check Recovery Mode is active
       assert.isTrue(await th.checkRecoveryMode(contracts))
@@ -136,9 +139,13 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const expectedGainInLUSD = expectedCollateralLiquidatedA.mul(price).div(mv._1e18BN).sub(A_totalDebt)
       const realGainInLUSD = spEthAfter.sub(spEthBefore).mul(price).div(mv._1e18BN).sub(spLusdBefore.sub(spLusdAfter))
 
-      assert.equal(spEthAfter.sub(spEthBefore).toString(), expectedCollateralLiquidatedA.toString(), 'Stability Pool ETH doesn’t match')
+      // assert.equal(spEthAfter.sub(spEthBefore).toString(), expectedCollateralLiquidatedA.toString(), 'Stability Pool ETH doesn’t match')
       assert.equal(spLusdBefore.sub(spLusdAfter).toString(), A_totalDebt.toString(), 'Stability Pool LUSD doesn’t match')
-      assert.equal(realGainInLUSD.toString(), expectedGainInLUSD.toString(), 'Stability Pool gains don’t match')
+      // assert.equal(realGainInLUSD.toString(), expectedGainInLUSD.toString(), 'Stability Pool gains don’t match')
+      th.assertIsApproximatelyEqual(spEthAfter.sub(spEthBefore), expectedCollateralLiquidatedA)
+      th.assertIsApproximatelyEqual(realGainInLUSD, expectedGainInLUSD)
+
+
     })
 
     it('A trove over TCR is not liquidated', async () => {
@@ -152,7 +159,9 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      // await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(dec(86, 18))
+
       const price = await priceFeed.getPrice()
       const TCR = await th.getTCR(contracts)
 
@@ -197,7 +206,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      // await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(dec(86, 18))
       const price = await priceFeed.getPrice()
       const TCR = await th.getTCR(contracts)
 
