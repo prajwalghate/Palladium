@@ -20,6 +20,7 @@ const PERMIT_TYPEHASH = keccak256(
 
 // Gets the EIP712 domain separator
 const getDomainSeparator = (name, contractAddress, chainId, version)  => {
+
   return keccak256(defaultAbiCoder.encode(['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'], 
   [ 
     keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
@@ -336,11 +337,12 @@ contract('LUSDToken', async accounts => {
 
       const buildPermitTx = async (deadline) => {
         const nonce = (await lusdTokenTester.nonces(approve.owner)).toString()
-
+        // const chID=chainId;
+        const chID=31337;
         // Get the EIP712 digest
         const digest = getPermitDigest(
           tokenName, lusdTokenTester.address,
-          chainId, tokenVersion,
+          chID, tokenVersion,
           approve.owner, approve.spender,
           approve.value, nonce, deadline
         )
@@ -357,6 +359,8 @@ contract('LUSDToken', async accounts => {
 
       it('permits and emits an Approval event (replay protected)', async () => {
         const deadline = 100000000000000
+        console.log("Alice",alice)
+        console.log("Bob",bob)
 
         // Approve it
         const { v, r, s, tx } = await buildPermitTx(deadline)
@@ -373,6 +377,7 @@ contract('LUSDToken', async accounts => {
           approve.owner, approve.spender, approve.value,
           deadline, v, r, s), 'PUSD: invalid signature')
 
+        
         // Check that the zero address fails
         await assertAssert(lusdTokenTester.permit('0x0000000000000000000000000000000000000000',
                                                   approve.spender, approve.value, deadline, '0x99', r, s))

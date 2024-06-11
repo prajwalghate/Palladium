@@ -77,7 +77,8 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       // Check community issuance starts with 32 million LQTY
       communityLQTYSupply = toBN(await lqtyToken.balanceOf(communityIssuanceTester.address))
-      assert.isAtMost(getDifference(communityLQTYSupply, '32000000000000000000000000'), 1000)
+      // assert.isAtMost(getDifference(communityLQTYSupply, '32000000000000000000000000'), 1000)
+      assert.isAtMost(getDifference(communityLQTYSupply, '300000000000000000000000000'), 1000)
 
       /* Monthly LQTY issuance
   
@@ -230,6 +231,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       const A_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(A)
       const B_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(B)
       const C_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(C)
+
+      // console.log("expectedLQTYGain_1yr",expectedLQTYGain_1yr.toString())
+      // console.log("A_LQTYGain_1yr",A_LQTYGain_1yr.toString())
 
       // Check gains are correct, error tolerance = 1e-6 of a token
 

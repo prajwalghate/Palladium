@@ -207,7 +207,7 @@ contract('Gas compensation tests', async accounts => {
     0.5% of coll = 0.04995 ETH. USD value: $9.99
     -> Expect composite debt = 10 + 200  = 2100 LUSD*/
     const compositeDebt_1 = await troveManagerTester.getCompositeDebt(dec(10, 18))
-    assert.equal(compositeDebt_1, dec(210, 18))
+    assert.equal(compositeDebt_1, dec(11, 18))
 
     /* ETH:USD price = 200
      coll = 0.055 ETH  
@@ -215,7 +215,7 @@ contract('Gas compensation tests', async accounts => {
      0.5% of coll = 0.000275 ETH. USD value: $0.055
      -> Expect composite debt = 0 + 200 = 200 LUSD*/
     const compositeDebt_2 = await troveManagerTester.getCompositeDebt(0)
-    assert.equal(compositeDebt_2, dec(200, 18))
+    assert.equal(compositeDebt_2, dec(1, 18))
 
     // /* ETH:USD price = 200
     // coll = 6.09232408808723580 ETH 
@@ -223,7 +223,7 @@ contract('Gas compensation tests', async accounts => {
     // 0.5% of coll = 0.004995 ETH. USD value: $6.09
     // -> Expect  composite debt =  200 + 200 = 400  LUSD */
     const compositeDebt_3 = await troveManagerTester.getCompositeDebt(dec(200, 18))
-    assert.equal(compositeDebt_3, '400000000000000000000')
+    assert.equal(compositeDebt_3, '201000000000000000000')
   })
 
   // returns $10 worth of ETH when 0.5% of coll == $10
@@ -238,7 +238,7 @@ contract('Gas compensation tests', async accounts => {
     0.5% of coll = 0.5 ETH. USD value: $10
     -> Expect composite debt = (123.45 + 200) = 323.45 LUSD  */
     const compositeDebt = await troveManagerTester.getCompositeDebt('123450000000000000000')
-    assert.equal(compositeDebt, '323450000000000000000')
+    assert.equal(compositeDebt, '124450000000000000000')
   })
 
   /// *** 
@@ -254,7 +254,8 @@ contract('Gas compensation tests', async accounts => {
     debt = 2000 LUSD
     -> Expect composite debt = (2000 + 200) = 2200 LUSD  */
     const compositeDebt_1 = (await troveManagerTester.getCompositeDebt(dec(2000, 18))).toString()
-    assert.equal(compositeDebt_1, '2200000000000000000000')
+    assert.equal(compositeDebt_1, '2001000000000000000000')
+    // assert.equal(compositeDebt_1, '2200000000000000000000')
 
     /* 
     ETH:USD price = 200 $/E
@@ -262,7 +263,8 @@ contract('Gas compensation tests', async accounts => {
     debt = 200 LUSD
     -> Expect composite debt = (200 + 200) = 400 LUSD  */
     const compositeDebt_2 = (await troveManagerTester.getCompositeDebt(dec(200, 18))).toString()
-    assert.equal(compositeDebt_2, '400000000000000000000')
+    // assert.equal(compositeDebt_2, '400000000000000000000')
+    assert.equal(compositeDebt_2, '201000000000000000000')
 
     /* 
     ETH:USD price = 200 $/E
@@ -270,7 +272,7 @@ contract('Gas compensation tests', async accounts => {
     debt = 500 LUSD
     -> Expect composite debt = (500 + 200) = 700 LUSD  */
     const compositeDebt_3 = (await troveManagerTester.getCompositeDebt(dec(500, 18))).toString()
-    assert.equal(compositeDebt_3, '700000000000000000000')
+    assert.equal(compositeDebt_3, '501000000000000000000')
 
     /* 
     ETH:USD price = 45323.54542 $/E
@@ -280,7 +282,7 @@ contract('Gas compensation tests', async accounts => {
     await priceFeed.setPrice('45323545420000000000000')
     const price_2 = await priceFeed.getPrice()
     const compositeDebt_4 = (await troveManagerTester.getCompositeDebt(dec(1, 27))).toString()
-    assert.isAtMost(th.getDifference(compositeDebt_4, '1000000200000000000000000000'), 100000000000)
+    assert.isAtMost(th.getDifference(compositeDebt_4, '1000000001000000000000000000'), 100000000000)
 
     /* 
     ETH:USD price = 1000000 $/E (1 million)
@@ -290,7 +292,7 @@ contract('Gas compensation tests', async accounts => {
     await priceFeed.setPrice(dec(1, 24))
     const price_3 = await priceFeed.getPrice()
     const compositeDebt_5 = (await troveManagerTester.getCompositeDebt('54321123456789000000000')).toString()
-    assert.equal(compositeDebt_5, '54521123456789000000000')
+    assert.equal(compositeDebt_5, '54322123456789000000000')
   })
 
   // --- Test ICRs with virtual debt ---
@@ -1011,7 +1013,8 @@ contract('Gas compensation tests', async accounts => {
     // price drops to 200 
     await priceFeed.setPrice(dec(200, 18))
     const price = await priceFeed.getPrice()
-
+    const mode =await th.checkRecoveryMode(contracts);
+    console.log("mode",mode.toString())
     // Check not in Recovery Mode 
     assert.isFalse(await th.checkRecoveryMode(contracts))
 

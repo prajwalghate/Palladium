@@ -260,13 +260,15 @@ contract('BorrowerWrappers', async accounts => {
 
   it('claimSPRewardsAndRecycle():', async () => {
     // Whale opens Trove
-    const whaleDeposit = toBN(dec(2350, 18))
+    // const whaleDeposit = toBN(dec(2350, 18))
+    const whaleDeposit = toBN(dec(2350+1989, 18))
     await openTrove({ extraLUSDAmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
     // Whale deposits 1850 LUSD in StabilityPool
     await stabilityPool.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
 
     // alice opens trove and provides 150 LUSD to StabilityPool
-    const aliceDeposit = toBN(dec(150, 18))
+    // const aliceDeposit = toBN(dec(150, 18)) 
+    const aliceDeposit = toBN(dec(150+1989, 18))
     await openTrove({ extraLUSDAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
     await stabilityPool.provideToSP(aliceDeposit, ZERO_ADDRESS, { from: alice })
 

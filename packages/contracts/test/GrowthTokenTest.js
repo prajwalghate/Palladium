@@ -88,11 +88,12 @@ contract('LQTY Token', async accounts => {
 
   const buildPermitTx = async (deadline) => {
     const nonce = (await lqtyTokenTester.nonces(approve.owner)).toString()
-
+    // const chID=chainId;
+    const chID=31337;
     // Get the EIP712 digest
     const digest = getPermitDigest(
       tokenName, lqtyTokenTester.address,
-      chainId, tokenVersion,
+      chID, tokenVersion,
       approve.owner, approve.spender,
       approve.value, nonce, deadline
     )
