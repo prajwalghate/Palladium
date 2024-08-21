@@ -116,7 +116,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
     // check ETH fee emitted in event is non-zero
-    const emittedETHFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3])
+    const emittedETHFee = toBN((await th.getEmittedRedemptionValues(redemptionTx))[3]).div(toBN('2'))
     assert.isTrue(emittedETHFee.gt(toBN('0')))
 
     // Check ETH fee per unit staked has increased by correct amount
@@ -204,7 +204,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
     const F_LUSD_After = await lqtyStaking.F_LUSD()
 
     // Expect fee per unit staked = fee/100, since there is 100 LUSD totalStaked
-    const expected_F_LUSD_After = emittedLUSDFee.div(toBN('100')) 
+    const expected_F_LUSD_After = emittedLUSDFee.div(toBN('100')).div(toBN('2'))
 
     assert.isTrue(expected_F_LUSD_After.eq(F_LUSD_After))
   })
@@ -274,7 +274,8 @@ contract('LQTYStaking revenue share tests', async accounts => {
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
     // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    // const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])//original
+    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3]/2)
     assert.isTrue(emittedETHFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await lusdToken.balanceOf(C)
@@ -284,22 +285,25 @@ contract('LQTYStaking revenue share tests', async accounts => {
     const C_BalAfterRedemption = await lusdToken.balanceOf(C)
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
-     // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     // check ETH fee 2 emitted in event is non-zero 
+     //original: const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])//original
+     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3]/2)
      assert.isTrue(emittedETHFee_2.gt(toBN('0')))
 
     // D draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawLUSD(th._100pct, dec(104, 18), D, D, {from: D})
     
     // Check LUSD fee value in event is non-zero
-    const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1))
+    //original: const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1))//original
+    const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1)/2)
     assert.isTrue(emittedLUSDFee_1.gt(toBN('0')))
 
     // B draws debt
     const borrowingTx_2 = await borrowerOperations.withdrawLUSD(th._100pct, dec(17, 18), B, B, {from: B})
     
     // Check LUSD fee value in event is non-zero
-    const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2))
+    //original: const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2))//original
+    const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2)/2)
     assert.isTrue(emittedLUSDFee_2.gt(toBN('0')))
 
     const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
@@ -347,7 +351,8 @@ contract('LQTYStaking revenue share tests', async accounts => {
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption))
 
     // check ETH fee 1 emitted in event is non-zero
-    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])
+    //original: const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3])//original
+    const emittedETHFee_1 = toBN((await th.getEmittedRedemptionValues(redemptionTx_1))[3]/2)
     assert.isTrue(emittedETHFee_1.gt(toBN('0')))
 
     const C_BalBeforeREdemption = await lusdToken.balanceOf(C)
@@ -358,21 +363,24 @@ contract('LQTYStaking revenue share tests', async accounts => {
     assert.isTrue(C_BalAfterRedemption.lt(C_BalBeforeREdemption))
  
      // check ETH fee 2 emitted in event is non-zero
-     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
+     //original: const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])//original
+     const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3]/2)
      assert.isTrue(emittedETHFee_2.gt(toBN('0')))
 
     // D draws debt
     const borrowingTx_1 = await borrowerOperations.withdrawLUSD(th._100pct, dec(104, 18), D, D, {from: D})
     
     // Check LUSD fee value in event is non-zero
-    const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1))
+    //original: const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1))//original
+    const emittedLUSDFee_1 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_1)/2)
     assert.isTrue(emittedLUSDFee_1.gt(toBN('0')))
 
     // B draws debt
     const borrowingTx_2 = await borrowerOperations.withdrawLUSD(th._100pct, dec(17, 18), B, B, {from: B})
     
     // Check LUSD fee value in event is non-zero
-    const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2))
+    //original: const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2))//original
+    const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2)/2)
     assert.isTrue(emittedLUSDFee_2.gt(toBN('0')))
 
     const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
@@ -433,7 +441,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
      const emittedETHFee_2 = toBN((await th.getEmittedRedemptionValues(redemptionTx_2))[3])
      assert.isTrue(emittedETHFee_2.gt(toBN('0')))
 
-    const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2)
+    const expectedTotalETHGain = emittedETHFee_1.add(emittedETHFee_2).div(toBN('2'))
 
     const A_ETHGain = await lqtyStaking.getPendingETHGain(A)
 
@@ -493,7 +501,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
     const emittedLUSDFee_2 = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(borrowingTx_2))
     assert.isTrue(emittedLUSDFee_2.gt(toBN('0')))
 
-    const expectedTotalLUSDGain = emittedLUSDFee_1.add(emittedLUSDFee_2)
+    const expectedTotalLUSDGain = emittedLUSDFee_1.add(emittedLUSDFee_2).div(toBN('2'))
     const A_LUSDGain = await lqtyStaking.getPendingLUSDGain(A)
 
     assert.isAtMost(th.getDifference(expectedTotalLUSDGain, A_LUSDGain), 1000)
@@ -587,32 +595,32 @@ contract('LQTYStaking revenue share tests', async accounts => {
     // Expected ETH gains
     const expectedETHGain_A = toBN('100').mul(emittedETHFee_1).div( toBN('600'))
                             .add(toBN('100').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('100').mul(emittedETHFee_3).div( toBN('650')))
+                            .add(toBN('100').mul(emittedETHFee_3).div( toBN('650'))).div(toBN('2'))
 
     const expectedETHGain_B = toBN('200').mul(emittedETHFee_1).div( toBN('600'))
                             .add(toBN('200').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('200').mul(emittedETHFee_3).div( toBN('650')))
+                            .add(toBN('200').mul(emittedETHFee_3).div( toBN('650'))).div(toBN('2'))
 
     const expectedETHGain_C = toBN('300').mul(emittedETHFee_1).div( toBN('600'))
                             .add(toBN('300').mul(emittedETHFee_2).div( toBN('600')))
-                            .add(toBN('300').mul(emittedETHFee_3).div( toBN('650')))
+                            .add(toBN('300').mul(emittedETHFee_3).div( toBN('650'))).div(toBN('2'))
 
-    const expectedETHGain_D = toBN('50').mul(emittedETHFee_3).div( toBN('650'))
+    const expectedETHGain_D = toBN('50').mul(emittedETHFee_3).div( toBN('650')).div(toBN('2'))
 
     // Expected LUSD gains:
     const expectedLUSDGain_A = toBN('100').mul(emittedLUSDFee_1).div( toBN('600'))
                             .add(toBN('100').mul(emittedLUSDFee_2).div( toBN('600')))
-                            .add(toBN('100').mul(emittedLUSDFee_3).div( toBN('650')))
+                            .add(toBN('100').mul(emittedLUSDFee_3).div( toBN('650'))).div(toBN('2'))
 
     const expectedLUSDGain_B = toBN('200').mul(emittedLUSDFee_1).div( toBN('600'))
                             .add(toBN('200').mul(emittedLUSDFee_2).div( toBN('600')))
-                            .add(toBN('200').mul(emittedLUSDFee_3).div( toBN('650')))
+                            .add(toBN('200').mul(emittedLUSDFee_3).div( toBN('650'))).div(toBN('2'))
 
     const expectedLUSDGain_C = toBN('300').mul(emittedLUSDFee_1).div( toBN('600'))
                             .add(toBN('300').mul(emittedLUSDFee_2).div( toBN('600')))
-                            .add(toBN('300').mul(emittedLUSDFee_3).div( toBN('650')))
+                            .add(toBN('300').mul(emittedLUSDFee_3).div( toBN('650'))).div(toBN('2'))
     
-    const expectedLUSDGain_D = toBN('50').mul(emittedLUSDFee_3).div( toBN('650'))
+    const expectedLUSDGain_D = toBN('50').mul(emittedLUSDFee_3).div( toBN('650')).div(toBN('2'))
 
 
     const A_ETHBalance_Before = toBN(await web3.eth.getBalance(A))
@@ -660,7 +668,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
     assert.isAtMost(th.getDifference(expectedETHGain_A, A_ETHGain), 1000)
     assert.isAtMost(th.getDifference(expectedLUSDGain_A, A_LUSDGain), 1000)
     assert.isAtMost(th.getDifference(expectedETHGain_B, B_ETHGain), 1000)
-    assert.isAtMost(th.getDifference(expectedLUSDGain_B, B_LUSDGain), 1000)
+    assert.isAtMost(th.getDifference(expectedLUSDGain_B , B_LUSDGain), 1000)
     assert.isAtMost(th.getDifference(expectedETHGain_C, C_ETHGain), 1000)
     assert.isAtMost(th.getDifference(expectedLUSDGain_C, C_LUSDGain), 1000)
     assert.isAtMost(th.getDifference(expectedETHGain_D, D_ETHGain), 1000)

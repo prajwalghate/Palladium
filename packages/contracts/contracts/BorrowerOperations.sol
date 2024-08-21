@@ -16,6 +16,9 @@ import "./Dependencies/console.sol";
 contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
     string constant public NAME = "BorrowerOperations";
 
+    // --- Fee collecter address ---
+    address public feeCollectorMultisig;
+
     // --- Connected contract declarations ---
 
     ITroveManager public troveManager;
@@ -88,6 +91,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
     event LUSDTokenAddressChanged(address _lusdTokenAddress);
     event LQTYStakingAddressChanged(address _lqtyStakingAddress);
+    event FeeCollectorAddressChanged(address _feeCollectorAddress);
 
     event TroveCreated(address indexed _borrower, uint arrayIndex);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, BorrowerOperation operation);
@@ -105,7 +109,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _lusdTokenAddress,
-        address _lqtyStakingAddress
+        address _lqtyStakingAddress,
+        address _feeCollectorMultisig
     )
         external
         override
@@ -124,6 +129,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         checkContract(_sortedTrovesAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_lqtyStakingAddress);
+        checkContract(_feeCollectorMultisig);
 
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);
@@ -136,6 +142,9 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         lusdToken = ILUSDToken(_lusdTokenAddress);
         lqtyStakingAddress = _lqtyStakingAddress;
         lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
+        feeCollectorMultisig = _feeCollectorMultisig;
+
+        
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
@@ -147,6 +156,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit LUSDTokenAddressChanged(_lusdTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
+        emit FeeCollectorAddressChanged(_feeCollectorMultisig);
 
         _renounceOwnership();
     }
@@ -367,8 +377,13 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         _requireUserAcceptsFee(LUSDFee, _LUSDAmount, _maxFeePercentage);
         
         // Send fee to LQTY staking contract
-        lqtyStaking.increaseF_LUSD(LUSDFee);
-        _lusdToken.mint(lqtyStakingAddress, LUSDFee);
+        // lqtyStaking.increaseF_LUSD(LUSDFee);//original
+        // _lusdToken.mint(lqtyStakingAddress, LUSDFee);//original
+
+        //mint half fee to lqtyStakingAddress and half to dao address
+        lqtyStaking.increaseF_LUSD(LUSDFee.div(2));
+        _lusdToken.mint(lqtyStakingAddress, LUSDFee.div(2));
+        _lusdToken.mint(feeCollectorMultisig, LUSDFee.div(2));
 
         return LUSDFee;
     }

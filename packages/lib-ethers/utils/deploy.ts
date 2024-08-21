@@ -203,6 +203,8 @@ const connectContracts = async (
         sortedTroves.address,
         lqtyToken.address,
         lqtyStaking.address,
+        Wallet.createRandom().address,
+        // "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
         { ...overrides, nonce }
       ),
 
@@ -218,6 +220,8 @@ const connectContracts = async (
         sortedTroves.address,
         lusdToken.address,
         lqtyStaking.address,
+        Wallet.createRandom().address,
+        // "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
         { ...overrides, nonce }
       ),
 

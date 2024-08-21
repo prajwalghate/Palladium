@@ -17,6 +17,9 @@ import "./Dependencies/console.sol";
 contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     string constant public NAME = "TroveManager";
 
+    // --- Fee collecter address ---
+    address public feeCollectorMultisig;
+
     // --- Connected contract declarations ---
 
     address public borrowerOperationsAddress;
@@ -208,6 +211,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
     event LQTYTokenAddressChanged(address _lqtyTokenAddress);
     event LQTYStakingAddressChanged(address _lqtyStakingAddress);
+    event FeeCollectorAddressChanged(address _feeCollectorAddress);
 
     event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _LUSDGasCompensation);
     event Redemption(uint _attemptedLUSDAmount, uint _actualLUSDAmount, uint _ETHSent, uint _ETHFee);
@@ -242,7 +246,8 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         address _lusdTokenAddress,
         address _sortedTrovesAddress,
         address _lqtyTokenAddress,
-        address _lqtyStakingAddress
+        address _lqtyStakingAddress,
+        address _feeCollectorMultisig
     )
         external
         override
@@ -259,6 +264,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_lqtyTokenAddress);
         checkContract(_lqtyStakingAddress);
+        checkContract(_feeCollectorMultisig);
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePool = IActivePool(_activePoolAddress);
@@ -271,6 +277,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
+        feeCollectorMultisig = _feeCollectorMultisig;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
@@ -283,6 +290,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
+        emit FeeCollectorAddressChanged(_feeCollectorMultisig);
 
         _renounceOwnership();
     }
@@ -1008,8 +1016,12 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         _requireUserAcceptsFee(totals.ETHFee, totals.totalETHDrawn, _maxFeePercentage);
 
         // Send the ETH fee to the LQTY staking contract
-        contractsCache.activePool.sendETH(address(contractsCache.lqtyStaking), totals.ETHFee);
-        contractsCache.lqtyStaking.increaseF_ETH(totals.ETHFee);
+        //here send half fee to lqtyStaking and half to dao address 
+        // contractsCache.activePool.sendETH(address(contractsCache.lqtyStaking), totals.ETHFee);//original
+        // contractsCache.lqtyStaking.increaseF_ETH(totals.ETHFee);//original
+        contractsCache.activePool.sendETH(address(contractsCache.lqtyStaking), totals.ETHFee.div(2));
+        contractsCache.activePool.sendETH(feeCollectorMultisig, totals.ETHFee.div(2));
+        contractsCache.lqtyStaking.increaseF_ETH(totals.ETHFee.div(2));
 
         totals.ETHToSendToRedeemer = totals.totalETHDrawn.sub(totals.ETHFee);
 

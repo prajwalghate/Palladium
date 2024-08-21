@@ -88,6 +88,10 @@ const oracleAddresses = {
   sepolia: {
     chainlink: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
     tellor: "0x80fc34a2f9FfE86F41580F47368289C402DEc660"
+  },
+  sepoliaFork: {
+    chainlink: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+    tellor: "0x80fc34a2f9FfE86F41580F47368289C402DEc660"
   }
 };
 
@@ -102,6 +106,7 @@ const wethAddresses = {
   goerliFork: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   sepolia: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+  sepoliaFork: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
   botonixFork:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6",
   botonix:"0x69e0778b9Ba7e795329Ec8971B1FE46fA783daF6"
 };
@@ -135,6 +140,10 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("mainnet"),
 
     goerliFork: {
+      url: "http://127.0.0.1:3000/",
+      accounts: [deployerAccount]
+    },
+    sepoliaFork: {
       url: "http://127.0.0.1:3000/",
       accounts: [deployerAccount]
     },
@@ -244,11 +253,15 @@ task("deploy", "Deploys the contracts to the network")
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
+      // const priceRouter="0xd9833A378637573E1CB56Bb9FFd69FA1F487Ad31";//botanix
+      const priceRouter="0x48e8b294f36e68C9F7f2380A7d67CbD80E792eaB";//sepolia
+      // console.log("useRealPriceFeed",useRealPriceFeed)
+
       useRealPriceFeed ??= env.network.name === "mainnet";
 
-      if (useRealPriceFeed && !hasOracles(env.network.name)) {
-        throw new Error(`PriceFeed not supported on ${env.network.name}`);
-      }
+      // if (useRealPriceFeed && !hasOracles(env.network.name)) {
+      //   throw new Error(`PriceFeed not supported on ${env.network.name}`);
+      // }
 
       let wethAddress: string | undefined = undefined;
       if (createUniswapPair) {
@@ -262,35 +275,47 @@ task("deploy", "Deploys the contracts to the network")
       setSilent(false);
 
       const deployment = await env.deployLiquity(deployer, useRealPriceFeed, wethAddress, overrides);
-
-      if (useRealPriceFeed) {
+      console.log("here")
+      if(useRealPriceFeed){
         const contracts = _connectToContracts(deployer, deployment);
-
         assert(!_priceFeedIsTestnet(contracts.priceFeed));
-
-        if (hasOracles(env.network.name)) {
-          const tellorCallerAddress = await deployTellorCaller(
-            deployer,
-            getContractFactory(env),
-            oracleAddresses[env.network.name].tellor,
-            overrides
-          );
-
-          console.log(`Hooking up PriceFeed with oracles ...`);
-
-          const tx = await contracts.priceFeed.setAddresses(
-            oracleAddresses[env.network.name].chainlink,
-            tellorCallerAddress,
-            overrides
-          );
-
-          await tx.wait();
-        }
+        console.log("priceRouter",priceRouter)
+        //validate priceRouter address
+        // console.log("contracts.priceFeed",contracts.priceFeed)
+        const tx = await contracts.priceFeed.setAddresses(//when updating in main branch update abi in ethers package
+          priceRouter,
+          overrides
+        );
+        await tx.wait();
       }
+
+      // if (useRealPriceFeed) {
+      //   const contracts = _connectToContracts(deployer, deployment);
+
+      //   assert(!_priceFeedIsTestnet(contracts.priceFeed));
+
+      //   if (hasOracles(env.network.name)) {
+      //     const tellorCallerAddress = await deployTellorCaller(
+      //       deployer,
+      //       getContractFactory(env),
+      //       oracleAddresses[env.network.name].tellor,
+      //       overrides
+      //     );
+
+      //     console.log(`Hooking up PriceFeed with oracles ...`);
+
+      //     const tx = await contracts.priceFeed.setAddresses(
+      //       oracleAddresses[env.network.name].chainlink,
+      //       tellorCallerAddress,
+      //       overrides
+      //     );
+
+      //     await tx.wait();
+      //   }
+      // }
 
       if(setRouterOracle){
         const contracts = _connectToContracts(deployer, deployment);
-        const priceRouter="0xd9833A378637573E1CB56Bb9FFd69FA1F487Ad31";
         assert(_priceFeedIsTestnet(contracts.priceFeed));
         const tx = await contracts.priceFeed.setAddresses(
           priceRouter,

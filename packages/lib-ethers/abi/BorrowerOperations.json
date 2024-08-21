@@ -44,6 +44,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_feeCollectorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "FeeCollectorAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_gasPoolAddress",
         "type": "address"
       }
@@ -437,6 +450,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "feeCollectorMultisig",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -683,6 +709,11 @@
       {
         "internalType": "address",
         "name": "_lqtyStakingAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_feeCollectorMultisig",
         "type": "address"
       }
     ],

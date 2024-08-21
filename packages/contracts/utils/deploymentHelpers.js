@@ -45,6 +45,8 @@ const {
   TokenProxy,
   LQTYStakingProxy
 } = require('../utils/proxyHelpers.js')
+const { Wallet } = require('ethers')
+
 
 /* "Liquity core" consists of all contracts in the core Liquity system.
 
@@ -350,7 +352,9 @@ class DeploymentHelper {
       contracts.lusdToken.address,
       contracts.sortedTroves.address,
       LQTYContracts.lqtyToken.address,
-      LQTYContracts.lqtyStaking.address
+      LQTYContracts.lqtyStaking.address,
+      //random address using .random
+      Wallet.createRandom().address
     )
 
     // set contracts in BorrowerOperations 
@@ -364,7 +368,9 @@ class DeploymentHelper {
       contracts.priceFeedTestnet.address,
       contracts.sortedTroves.address,
       contracts.lusdToken.address,
-      LQTYContracts.lqtyStaking.address
+      LQTYContracts.lqtyStaking.address,
+      //random address using .random
+      Wallet.createRandom().address
     )
 
     // set contracts in the Pools
