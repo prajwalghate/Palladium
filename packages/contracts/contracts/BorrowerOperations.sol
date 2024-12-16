@@ -129,7 +129,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         checkContract(_sortedTrovesAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_lqtyStakingAddress);
-        checkContract(_feeCollectorMultisig);
+        // checkContract(_feeCollectorMultisig);
 
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);

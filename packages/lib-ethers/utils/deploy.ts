@@ -126,9 +126,10 @@ const deployContracts = async (
         addresses.communityIssuance,
         addresses.lqtyStaking,
         addresses.lockupContractFactory,
-        Wallet.createRandom().address, // _bountyAddress (TODO: parameterize this)
+        // Wallet.createRandom().address, // _bountyAddress (TODO: parameterize this)
+        "0x0Cf6A0e59c6D02EA6Ae1C62FbAD91C49a00262b2", // _bountyAddress (TODO: parameterize this)
         addresses.unipool, // _lpRewardsAddress
-        Wallet.createRandom().address, // _multisigAddress (TODO: parameterize this)
+        "0x41d1c2CE2968b603bCf797112A55E221ce7E8110", // _multisigAddress (TODO: parameterize this)
         { ...overrides }
       ),
 
@@ -203,8 +204,8 @@ const connectContracts = async (
         sortedTroves.address,
         lqtyToken.address,
         lqtyStaking.address,
-        Wallet.createRandom().address,
-        // "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
+        // Wallet.createRandom().address,
+        "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
         { ...overrides, nonce }
       ),
 
@@ -220,8 +221,8 @@ const connectContracts = async (
         sortedTroves.address,
         lusdToken.address,
         lqtyStaking.address,
-        Wallet.createRandom().address,
-        // "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
+        // Wallet.createRandom().address,
+        "0x961Ef0b358048D6E34BDD1acE00D72b37B9123D7",
         { ...overrides, nonce }
       ),
 

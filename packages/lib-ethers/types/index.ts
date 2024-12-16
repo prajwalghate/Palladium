@@ -70,6 +70,7 @@ interface BorrowerOperationsCalls {
   _100pct(_overrides?: CallOverrides): Promise<BigNumber>;
   activePool(_overrides?: CallOverrides): Promise<string>;
   defaultPool(_overrides?: CallOverrides): Promise<string>;
+  feeCollectorMultisig(_overrides?: CallOverrides): Promise<string>;
   getCompositeDebt(_debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemColl(_overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemDebt(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -102,6 +103,7 @@ export interface BorrowerOperations
     ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
     CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_defaultPoolAddress?: null): EventFilter;
+    FeeCollectorAddressChanged(_feeCollectorAddress?: null): EventFilter;
     GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
     LQTYStakingAddressChanged(_lqtyStakingAddress?: null): EventFilter;
     LUSDBorrowingFeePaid(_borrower?: string | null, _LUSDFee?: null): EventFilter;
@@ -117,6 +119,7 @@ export interface BorrowerOperations
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _activePoolAddress: string }>[];
   extractEvents(logs: Log[], name: "CollSurplusPoolAddressChanged"): _TypedLogDescription<{ _collSurplusPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _defaultPoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "FeeCollectorAddressChanged"): _TypedLogDescription<{ _feeCollectorAddress: string }>[];
   extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "LQTYStakingAddressChanged"): _TypedLogDescription<{ _lqtyStakingAddress: string }>[];
   extractEvents(logs: Log[], name: "LUSDBorrowingFeePaid"): _TypedLogDescription<{ _borrower: string; _LUSDFee: BigNumber }>[];
@@ -544,24 +547,14 @@ export interface MultiTroveGetter
 
 interface PriceFeedCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  ETHUSD_TELLOR_REQ_ID(_overrides?: CallOverrides): Promise<BigNumber>;
-  MAX_PRICE_DEVIATION_FROM_PREVIOUS_ROUND(_overrides?: CallOverrides): Promise<BigNumber>;
-  MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES(_overrides?: CallOverrides): Promise<BigNumber>;
-  NAME(_overrides?: CallOverrides): Promise<string>;
-  TARGET_DIGITS(_overrides?: CallOverrides): Promise<BigNumber>;
-  TELLOR_DIGITS(_overrides?: CallOverrides): Promise<BigNumber>;
-  TIMEOUT(_overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   lastGoodPrice(_overrides?: CallOverrides): Promise<BigNumber>;
   owner(_overrides?: CallOverrides): Promise<string>;
-  priceAggregator(_overrides?: CallOverrides): Promise<string>;
-  status(_overrides?: CallOverrides): Promise<number>;
-  tellorCaller(_overrides?: CallOverrides): Promise<string>;
+  priceRouter(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface PriceFeedTransactions {
   fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
-  // setAddresses(_priceAggregatorAddress: string, _tellorCallerAddress: string, _overrides?: Overrides): Promise<void>;
   setAddresses(_priceRouterAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
@@ -570,11 +563,9 @@ export interface PriceFeed
   readonly filters: {
     LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
-    PriceFeedStatusChanged(newStatus?: null): EventFilter;
   };
   extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _lastGoodPrice: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
-  extractEvents(logs: Log[], name: "PriceFeedStatusChanged"): _TypedLogDescription<{ newStatus: number }>[];
 }
 
 interface PriceFeedTestnetCalls {
@@ -586,7 +577,6 @@ interface PriceFeedTestnetCalls {
 interface PriceFeedTestnetTransactions {
   fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
   setPrice(price: BigNumberish, _overrides?: Overrides): Promise<boolean>;
-  setAddresses(_priceRouterAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface PriceFeedTestnet
@@ -781,6 +771,7 @@ interface TroveManagerCalls {
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
   checkRecoveryMode(_price: BigNumberish, _overrides?: CallOverrides): Promise<boolean>;
   defaultPool(_overrides?: CallOverrides): Promise<string>;
+  feeCollectorMultisig(_overrides?: CallOverrides): Promise<string>;
   getBorrowingFee(_LUSDDebt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getBorrowingFeeWithDecay(_LUSDDebt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getBorrowingRate(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -848,6 +839,7 @@ export interface TroveManager
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
     CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_defaultPoolAddress?: null): EventFilter;
+    FeeCollectorAddressChanged(_feeCollectorAddress?: null): EventFilter;
     GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
     LQTYStakingAddressChanged(_lqtyStakingAddress?: null): EventFilter;
     LQTYTokenAddressChanged(_lqtyTokenAddress?: null): EventFilter;
@@ -872,6 +864,7 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
   extractEvents(logs: Log[], name: "CollSurplusPoolAddressChanged"): _TypedLogDescription<{ _collSurplusPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _defaultPoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "FeeCollectorAddressChanged"): _TypedLogDescription<{ _feeCollectorAddress: string }>[];
   extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "LQTYStakingAddressChanged"): _TypedLogDescription<{ _lqtyStakingAddress: string }>[];
   extractEvents(logs: Log[], name: "LQTYTokenAddressChanged"): _TypedLogDescription<{ _lqtyTokenAddress: string }>[];

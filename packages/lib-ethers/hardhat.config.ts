@@ -253,8 +253,8 @@ task("deploy", "Deploys the contracts to the network")
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
-      // const priceRouter="0xd9833A378637573E1CB56Bb9FFd69FA1F487Ad31";//botanix
-      const priceRouter="0x48e8b294f36e68C9F7f2380A7d67CbD80E792eaB";//sepolia
+      const priceRouter="0x48e8b294f36e68C9F7f2380A7d67CbD80E792eaB";//botanix
+      // const priceRouter="0x48e8b294f36e68C9F7f2380A7d67CbD80E792eaB";//sepolia
       // console.log("useRealPriceFeed",useRealPriceFeed)
 
       useRealPriceFeed ??= env.network.name === "mainnet";
@@ -314,14 +314,14 @@ task("deploy", "Deploys the contracts to the network")
       //   }
       // }
 
-      if(setRouterOracle){
-        const contracts = _connectToContracts(deployer, deployment);
-        assert(_priceFeedIsTestnet(contracts.priceFeed));
-        const tx = await contracts.priceFeed.setAddresses(
-          priceRouter,
-          overrides
-        );
-      }
+      // if(setRouterOracle){
+      //   const contracts = _connectToContracts(deployer, deployment);
+      //   assert(_priceFeedIsTestnet(contracts.priceFeed));
+      //   const tx = await contracts.priceFeed.setAddresses(
+      //     priceRouter,
+      //     overrides
+      //   );
+      // }
 
       fs.mkdirSync(path.join("deployments", channel), { recursive: true });
 
